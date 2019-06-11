@@ -953,7 +953,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-dist_binSCRIPTS
+install-exec-am: install-dist_binSCRIPTS install-exec-local
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
 install-html: install-html-am
@@ -1006,8 +1006,8 @@ uninstall-am: uninstall-dist_binSCRIPTS uninstall-openweaveLTLIBRARIES \
 	html-am info info-am install install-am install-data \
 	install-data-am install-dist_binSCRIPTS install-dvi \
 	install-dvi-am install-exec install-exec-am install-exec-hook \
-	install-html install-html-am install-info install-info-am \
-	install-man install-openweaveLTLIBRARIES \
+	install-exec-local install-html install-html-am install-info \
+	install-info-am install-man install-openweaveLTLIBRARIES \
 	install-openweavePYTHON install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
@@ -1027,6 +1027,19 @@ install-exec-hook:
 
 weave-device-mgr: $(srcdir)/weave-device-mgr.py
 	cp $(srcdir)/weave-device-mgr.py weave-device-mgr
+
+# ------------------------------------------------------------
+# "openweave" Python Wheel
+# ------------------------------------------------------------
+
+.openweave-wheel: $(srcdir)/build-openweave-wheel.py _WeaveDeviceMgr.la $(shell find $(srcdir) -type f -name '*.py')
+	mkdir -p $(DESTDIR)$(pyexecdir)
+	rm -f openweave-*.whl $(DESTDIR)$(pyexecdir)/openweave-*.whl
+	$(PYTHON) $(srcdir)/build-openweave-wheel.py
+	cp openweave-*.whl $(DESTDIR)$(pyexecdir)
+	touch .openweave-wheel
+
+install-exec-local: .openweave-wheel
 
 include $(abs_top_nlbuild_autotools_dir)/automake/post.am
 

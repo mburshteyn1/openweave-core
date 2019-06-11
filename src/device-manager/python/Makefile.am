@@ -104,5 +104,17 @@ dist_bin_SCRIPTS = weave-device-mgr
 weave-device-mgr: $(srcdir)/weave-device-mgr.py
 	cp $(srcdir)/weave-device-mgr.py weave-device-mgr
 
+# ------------------------------------------------------------
+# "openweave" Python Wheel
+# ------------------------------------------------------------
+
+.openweave-wheel: $(srcdir)/build-openweave-wheel.py _WeaveDeviceMgr.la $(shell find $(srcdir) -type f -name '*.py')
+	mkdir -p $(DESTDIR)$(pyexecdir)
+	rm -f openweave-*.whl $(DESTDIR)$(pyexecdir)/openweave-*.whl
+	$(PYTHON) $(srcdir)/build-openweave-wheel.py
+	cp openweave-*.whl $(DESTDIR)$(pyexecdir)
+	touch .openweave-wheel
+
+install-exec-local: .openweave-wheel
 
 include $(abs_top_nlbuild_autotools_dir)/automake/post.am
